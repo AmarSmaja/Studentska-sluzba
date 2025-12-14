@@ -21,7 +21,7 @@ public class DatabaseInitializer {
                         prezime           TEXT NOT NULL,
                         studijski_program TEXT NOT NULL,
                         godina_upisa      INTEGER NOT NULL
-                            CHECK (godina_upisa BETWEEN 1980 AND 2026)
+                            CHECK (godina_upisa BETWEEN 2020 AND 2050)
                     )
                     """);
 
@@ -30,7 +30,7 @@ public class DatabaseInitializer {
                         sifra_predmeta   TEXT PRIMARY KEY,
                         naziv            TEXT NOT NULL,
                         ects             INTEGER NOT NULL
-                            CHECK (ects BETWEEN 1 AND 8),
+                            CHECK (ects BETWEEN 1 AND 15),
                         semestar         INTEGER NOT NULL
                             CHECK (semestar BETWEEN 1 AND 10)
                     )

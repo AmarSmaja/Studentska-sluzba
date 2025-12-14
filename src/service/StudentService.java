@@ -32,8 +32,8 @@ public class StudentService {
         if (s.getBrojIndeksa() == null || s.getBrojIndeksa().isBlank()) {
             throw new IllegalArgumentException("Broj indeksa je obavezan.");
         }
-        if (s.getGodinaUpisa() < 2020 || s.getGodinaUpisa() > 2026) {
-            throw new IllegalArgumentException("Godina upisa mora biti između 2020 i 2026.");
+        if (s.getGodinaUpisa() < 2020 || s.getGodinaUpisa() > 2050) {
+            throw new IllegalArgumentException("Godina upisa mora biti između 2020 i 2050.");
         }
         if (studentRepo.findById(s.getBrojIndeksa()).isPresent()) {
             throw new IllegalArgumentException("Student sa ovim indeksom već postoji.");
