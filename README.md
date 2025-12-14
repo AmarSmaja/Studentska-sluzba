@@ -185,6 +185,8 @@ Nakon unosa indeksa i validacije, moze pregledati svoje ocjene.
 - Unosom `1`, pravi se lista upisa, koji koriste `upisService` servis da prikazu upise.
 - Unosom `0`, program se zatvara.
 
+---
+
 ## 3. Opcije
 
 ### 3.1 Studenti opcije
@@ -209,3 +211,61 @@ Nakon unosa indeksa i validacije, moze pregledati svoje ocjene.
   - da vec ne postoji upis istog studenta na isti predmet u istoj godini.
 - Ocjene:
   - raspon od 5 - 10
+
+---
+
+## AI Usage Report
+
+Model umjetne inteligencije: ChatGPT 5.2 Thinking
+
+Q: Koji je najbolji nacin da uradim dijagram toka java aplikacije?
+
+A: https://chatgpt.com/share/693f3c95-6958-8001-988f-4d80cb8e6c84
+
+---
+
+Q: Koji je najbolji tip nacina struktuiranja java swing i konzolne aplikacije koristeci entitete (domene), servise, repo i persistance
+
+A: https://chatgpt.com/share/693f3d8e-03a4-8001-a93a-fe53fd90ed33
+
+---
+
+Q: Kako da uspostavim SQLite JDBC u java projektu?
+
+A: https://chatgpt.com/share/693f19fd-9168-8001-bc40-645eb3fc7bd6
+
+---
+
+Q: Kako da konfigurisem da mi java aplikacija kreira sve repozitorije i servise?
+
+A: https://chatgpt.com/share/693f36f8-4ef4-8001-92be-0dd8726a929f
+
+--- 
+
+Q: Na koji nacin je najjednostavnije i najefikasnije da manipuliram stringovima u Javi?
+
+A: https://chatgpt.com/share/693f3a07-9be0-8001-bc87-4bcdb8f66b1b
+
+---
+
+Q: Kako u Java Swing-u da iz liste studenata filtriram samo onog sa trazenim brojem? Postoji li .filter metoda?
+
+A: https://chatgpt.com/share/693f3ad5-0eb0-8001-84ab-60bcfb64da85
+
+---
+
+Q: Kako da u JOptionPane u Swingu pokazem error poruke u try catch-u?
+
+A: https://chatgpt.com/share/693f3bce-c738-8001-bbcb-2337a2fd840c
+
+---
+
+Q: Kako da provjerim koje dugme je selektovano u java swingu. Imam dva radio dugmeta, i kada kliknem na dugme zelim da provjerim koje od dva je selektovano
+
+A: https://chatgpt.com/share/693f3c37-918c-8001-a74a-50b517e32f02
+
+---
+
+Q: Na koji nacin da implementiram logiku Kartona za studenta. Pravim java desktop aplikaciju za studentsku sluzbu, i trebam implementirati Karton, kada student unese indeks, da mu ispise sve ocjene i izracuna broj polozenih ECTS bodova, i na kraju da mu generise karton sa listom svih polozenih predmeta.
+
+A: https://chatgpt.com/share/693f38cd-e9f8-8001-86db-6c0261fe1cf3

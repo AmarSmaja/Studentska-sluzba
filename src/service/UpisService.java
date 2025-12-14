@@ -269,7 +269,7 @@ public class UpisService {
         return sb.toString();
     }
     /**
-     * Vrsi upis studenta po broju indeksa.
+     * Vrsi upis za studenta po broju indeksa.
      * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20.
      * @return Lista upisa.
      */
