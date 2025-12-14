@@ -6,6 +6,17 @@ import service.UpisService;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Swing GUI panel za prikaz kartona studenata.
+ * <p>Omogucava:
+ * <ul>
+ *     <li>Tekstualni pregled svih upisa/ocjena u {@link JTextArea}</li>
+ *     <li>Ukupan broj polozenih ECTS bodova u {@link JLabel}</li>
+ * </ul>
+ * <br>
+ * Za poslovnu logiku koristi se {@link UpisService}.
+ * </p>
+ */
 public class KartonPanel extends JPanel {
     private final UpisService upisService;
 
@@ -14,11 +25,18 @@ public class KartonPanel extends JPanel {
     private JButton btnPrikazi;
     private JLabel lblUkupnoEctsValue;
 
+    /**
+     * Kreira novi panel za prikaz kartona i incijalizuje GUI komponente.
+     * @param config Konfiguracija iz koje se dobija {@link UpisService}.
+     */
     public KartonPanel(AppConfig config) {
         this.upisService = config.getUpisService();
         initGui();
     }
 
+    /**
+     * Inicijalizuje se GUI i rasporedjuje Swing komponente.
+     */
     private void initGui() {
         setLayout(new BorderLayout());
 
@@ -63,6 +81,9 @@ public class KartonPanel extends JPanel {
         btnPrikazi.addActionListener(e -> prikaziKarton());
     }
 
+    /**
+     * Ucitava i prikazuje karton studenata na osnovu broja indeksa unesenog u polje.
+     */
     private void prikaziKarton() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -73,7 +94,6 @@ public class KartonPanel extends JPanel {
                 return;
             }
 
-            // poziv servisa
             UpisService.StudentKarton karton = upisService.kreirajKarton(indeks);
             String tekst = upisService.formatirajKarton(karton);
 

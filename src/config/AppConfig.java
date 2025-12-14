@@ -10,6 +10,16 @@ import service.PredmetService;
 import service.StudentService;
 import service.UpisService;
 
+/**
+ * Centralna konfiguracijska klasa aplikacije.
+ * <p>Zaduzena je za:
+ * <ul>
+ *     <li>Instanciranje konkretnih repozitorija (SQLite implementacije).</li>
+ *     <li>Instanciranje servisnog sloja ({@link StudentService}), ({@link PredmetService}), ({@link UpisService})</li>
+ *     <li>Omogucavanje pristupa istim instancama servisa kroz getter metode.</li>
+ * </ul>
+ * </p>
+ */
 public class AppConfig {
     private final StudentRepository studentRepository;
     private final PredmetRepository predmetRepository;
@@ -19,6 +29,9 @@ public class AppConfig {
     private final PredmetService predmetService;
     private final UpisService upisService;
 
+    /**
+     * Podrazumijevani konstruktor koji kreire SQLite repozitorij za studente, predmete i upise.
+     */
     public AppConfig() {
         this.studentRepository = new SQLiteStudentRepository();
         this.predmetRepository = new SQLitePredmetRepository();

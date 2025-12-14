@@ -1,5 +1,6 @@
 package repo.sqlite;
 
+import domain.Student;
 import domain.Upis;
 import persistance.DBConnectionFactory;
 import repo.UpisRepository;
@@ -9,7 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementacija {@link UpisRepository} interfejsa koja koristi SQLite bazu podataka.
+ * <p>Koristi JDBC i {@link persistance.DBConnectionFactory} za vrsenje CRUD operacija prema bazi.</p>
+ */
 public class SQLiteUpisRepository implements UpisRepository {
+    /**
+     * Upisuje novi zapis u tabelu
+     * @param upis Upis koji se dodaje u bazu.
+     */
     @Override
     public void save(Upis upis) {
         String sql = """
@@ -49,6 +58,10 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
     }
 
+    /**
+     * Azurira postojeci zapis u tabeli
+     * @param upis Upis sa novim podacima u tabelu.
+     */
     @Override
     public void update(Upis upis) {
         String sql = """
@@ -85,6 +98,10 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
     }
 
+    /**
+     * Brise upis iz baze na osnovu ID-a.
+     * @param id ID upisa koji se brise, npr. 5
+     */
     @Override
     public void delete(long id) {
         String sql = "DELETE FROM upis WHERE id = ?";
@@ -100,6 +117,11 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
     }
 
+    /**
+     * Vrsi pretragu po ID-u upisa
+     * @param id ID upisa koji se pretrazuje, npr. 5
+     * @return Upis, ako postoji
+     */
     @Override
     public Optional<Upis> findById(long id) {
         String sql = "SELECT * FROM upis WHERE id = ?";
@@ -121,6 +143,11 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
     }
 
+    /**
+     * Vraca sve upise za nekog studenta.
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20
+     * @return Lista upisa studenta, ako postoji
+     */
     @Override
     public List<Upis> findByStudent(String brojIndeksa) {
         String sql = "SELECT * FROM upis WHERE broj_indeksa = ? ORDER BY akademska_godina, sifra_predmeta";
@@ -144,6 +171,12 @@ public class SQLiteUpisRepository implements UpisRepository {
         return result;
     }
 
+    /**
+     * Vraca sve upise za odredjenog studenta.
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20
+     * @param akademskaGodina Akademska godina, npr. 2020./21.
+     * @return Lista upisa po indeksu i godini, ako postoji
+     */
     @Override
     public List<Upis> findByStudentAndGodina(String brojIndeksa, String akademskaGodina) {
         String sql = "SELECT * FROM upis WHERE broj_indeksa = ? AND akademska_godina = ? ORDER BY sifra_predmeta";
@@ -168,6 +201,11 @@ public class SQLiteUpisRepository implements UpisRepository {
         return result;
     }
 
+    /**
+     * Vraca sve upise po sifri predmeta.
+     * @param sifraPredmeta Sifra predmeta, npr. MAT1
+     * @return Lista predmeta, ako postoji
+     */
     @Override
     public List<Upis> findByPredmet(String sifraPredmeta) {
         String sql = "SELECT * FROM upis WHERE sifra_predmeta = ? ORDER BY akademska_godina, broj_indeksa";
@@ -191,6 +229,13 @@ public class SQLiteUpisRepository implements UpisRepository {
         return result;
     }
 
+    /**
+     * Provjerava da li vec postoji upis istog studenta na isti predmet u istoj akademskoj godini.
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20
+     * @param sifraPredmeta Sifra predmeta, npr. MAT1
+     * @param akademskaGodina Akademska godina, npr. 2020./21.
+     * @return {@code true} ako postoji barem jedan upis, inace {@code false}.
+     */
     @Override
     public boolean exists(String brojIndeksa, String sifraPredmeta, String akademskaGodina) {
         String sql = """
@@ -214,6 +259,63 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
     }
 
+    /**
+     * Provjerava da li student ima barem jedan upis u tabeli.
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20
+     * @return {@code true} ako postoji barem jedan upis za studenta, inace {@code false}.
+     */
+    @Override
+    public boolean existsForStudent(String brojIndeksa) {
+        String sql = "SELECT 1 FROM upis WHERE broj_indeksa = ? LIMIT 1";
+
+        try (Connection conn = DBConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, brojIndeksa);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Greška pri existsForStudent", e);
+        }
+    }
+
+    /**
+     * Provjerava da li predmet ima barem jedan upis u tabeli.
+     * @param sifraPredmeta Sifra predmeta, npr. MAT1
+     * @return {@code true} ako postoji barem jedan upis za predmet, inace {@code false}.
+     */
+    @Override
+    public boolean existsForPredmet(String sifraPredmeta) {
+        String sql = "SELECT 1 FROM upis WHERE sifra_predmeta = ? LIMIT 1";
+
+        try (Connection conn = DBConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, sifraPredmeta);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Greška pri existsForPredmet", e);
+        }
+    }
+
+    /**
+     * Mapira red iz ResultSet-a u objekat {@link Upis}.
+     * Ocekuje rezultat:
+     * <ul>
+     *     <li>{@code id}</li>
+     *     <li>{@code broj_indeksa}</li>
+     *     <li>{@code sifra_predmeta}</li>
+     *     <li>{@code akademska_godina}</li>
+     *     <li>{@code ocjena}</li>
+     *     <li>{@code razlog_izmjene}</li>
+     * </ul>
+     * @param rs Rezultat SQL upita
+     * @return Novi {@link Upis} popunjen podacima.
+     * @throws SQLException Ako dodje do problema pri citanju podataka.
+     */
     private Upis mapRow(ResultSet rs) throws SQLException {
         Upis u = new Upis();
         u.setId(rs.getLong("id"));
@@ -236,37 +338,5 @@ public class SQLiteUpisRepository implements UpisRepository {
         }
 
         return u;
-    }
-
-    @Override
-    public boolean existsForStudent(String brojIndeksa) {
-        String sql = "SELECT 1 FROM upis WHERE broj_indeksa = ? LIMIT 1";
-
-        try (Connection conn = DBConnectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, brojIndeksa);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Greška pri existsForStudent", e);
-        }
-    }
-
-    @Override
-    public boolean existsForPredmet(String sifraPredmeta) {
-        String sql = "SELECT 1 FROM upis WHERE sifra_predmeta = ? LIMIT 1";
-
-        try (Connection conn = DBConnectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, sifraPredmeta);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Greška pri existsForPredmet", e);
-        }
     }
 }

@@ -8,11 +8,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Swing GUI panel za rad sa predmetima.
+ * <p>Omogucava:
+ * <ul>
+ *     <li>Prikaz liste svih predmeta.</li>
+ *     <li>Dodavanje novih predmeta.</li>
+ * </ul>
+ * Za poslovnu logiku koristi se {@link PredmetService}.
+ * </p>
+ */
 public class PredmetPanel extends JPanel {
     private final PredmetService predmetService;
 
-    // UI komponente
-    private JTextArea taLista;
+    private JTextArea Lista;
     private JTextField tfSifra;
     private JTextField tfNaziv;
     private JTextField tfEcts;
@@ -20,22 +29,27 @@ public class PredmetPanel extends JPanel {
     private JButton btnOsvjezi;
     private JButton btnDodaj;
 
+    /**
+     * Kreira panel za rad sa predmetima i inicijalizuje GUI komponente.
+     * @param config Konfiguracija iz koje se dobija {@link PredmetService}.
+     */
     public PredmetPanel(AppConfig config) {
         this.predmetService = config.getPredmetService();
         initGui();
         osvjeziListu();
     }
 
+    /**
+     * Inicijalizuje i rasporedjuje sve Swing komponente.
+     */
     private void initGui() {
         setLayout(new BorderLayout());
 
-        // --- Lijevo: lista predmeta ---
-        taLista = new JTextArea();
-        taLista.setEditable(false);
-        JScrollPane scroll = new JScrollPane(taLista);
+        Lista = new JTextArea();
+        Lista.setEditable(false);
+        JScrollPane scroll = new JScrollPane(Lista);
         add(scroll, BorderLayout.CENTER);
 
-        // --- Desno: forma za unos ---
         JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -71,7 +85,6 @@ public class PredmetPanel extends JPanel {
         gbc.gridx = 1;
         formPanel.add(tfSemestar, gbc);
 
-        // Dugmad
         y++;
         btnOsvjezi = new JButton("Osvježi listu");
         btnDodaj = new JButton("Dodaj predmet");
@@ -83,28 +96,34 @@ public class PredmetPanel extends JPanel {
 
         add(formPanel, BorderLayout.EAST);
 
-        // Listeneri
         btnOsvjezi.addActionListener(e -> osvjeziListu());
         btnDodaj.addActionListener(e -> dodajPredmet());
     }
 
+    /**
+     * Ucitava sve predmete iz {@link PredmetService#sviPredmeti()}, i
+     * prikazuje ih u polju {@link #Lista}.
+     */
     private void osvjeziListu() {
         try {
             List<Predmet> predmeti = predmetService.sviPredmeti();
             if (predmeti.isEmpty()) {
-                taLista.setText("Nema predmeta.");
+                Lista.setText("Nema predmeta.");
                 return;
             }
             StringBuilder sb = new StringBuilder();
             for (Predmet p : predmeti) {
                 sb.append(p).append(System.lineSeparator());
             }
-            taLista.setText(sb.toString());
+            Lista.setText(sb.toString());
         } catch (Exception e) {
-            taLista.setText("Greška pri učitavanju predmeta: " + e.getMessage());
+            Lista.setText("Greška pri učitavanju predmeta: " + e.getMessage());
         }
     }
 
+    /**
+     * Dodaje novi predmet koristeci informacije iz korisnickog inputa.
+     */
     private void dodajPredmet() {
         try {
             String sifra = tfSifra.getText().trim();
@@ -119,7 +138,6 @@ public class PredmetPanel extends JPanel {
                     "Predmet dodan.",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
 
-            // očisti polja
             tfSifra.setText("");
             tfNaziv.setText("");
             tfEcts.setText("");

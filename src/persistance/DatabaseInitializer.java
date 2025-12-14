@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Inicijalizator Baza podataka.
+ * Koristi se kako bi napravio pocetne
+ * baze podataka koje koristi studentska sluzba.
+ */
 public class DatabaseInitializer {
     public static void main(String[] args) {
         try (Connection conn = DBConnectionFactory.getConnection();
@@ -16,7 +21,7 @@ public class DatabaseInitializer {
                         prezime           TEXT NOT NULL,
                         studijski_program TEXT NOT NULL,
                         godina_upisa      INTEGER NOT NULL
-                            CHECK (godina_upisa BETWEEN 2020 AND 2050)
+                            CHECK (godina_upisa BETWEEN 1980 AND 2026)
                     )
                     """);
 
@@ -25,7 +30,7 @@ public class DatabaseInitializer {
                         sifra_predmeta   TEXT PRIMARY KEY,
                         naziv            TEXT NOT NULL,
                         ects             INTEGER NOT NULL
-                            CHECK (ects BETWEEN 1 AND 15),
+                            CHECK (ects BETWEEN 1 AND 8),
                         semestar         INTEGER NOT NULL
                             CHECK (semestar BETWEEN 1 AND 10)
                     )
@@ -36,7 +41,7 @@ public class DatabaseInitializer {
                         id               INTEGER PRIMARY KEY AUTOINCREMENT,
                         broj_indeksa     TEXT NOT NULL,
                         sifra_predmeta   TEXT NOT NULL,
-                        akademska_godina TEXT NOT NULL,   -- npr. '2024/25'
+                        akademska_godina TEXT NOT NULL,
                         ocjena           INTEGER
                             CHECK (ocjena IS NULL OR (ocjena BETWEEN 5 AND 10)),
                         razlog_izmjene   TEXT,

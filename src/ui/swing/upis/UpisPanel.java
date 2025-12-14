@@ -8,11 +8,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Swing GUI panel za rad sa upisima i ocjenama.
+ * <p>Omogucava:
+ * <ul>
+ *     <li>Upis studenata na predmet u odredjenoj akademskoj godini.</li>
+ *     <li>Prikaz svih upisa za datog studenta.</li>
+ *     <li>Unos ocjene za postojeci upis.</li>
+ *     <li>Promjenu postojece ocjene uz razlog izmjene.</li>
+ *     <li>Ponistavanje upisa.</li>
+ * </ul>
+ * Za poslovnu logiku koristi se {@link UpisService}.
+ * </p>
+ */
 public class UpisPanel extends JPanel {
     private final UpisService upisService;
 
-    // UI komponente
-    private JTextArea taLista;
+    private JTextArea Lista;
 
     private JTextField tfIndeks;
     private JTextField tfSifraPredmeta;
@@ -28,21 +40,26 @@ public class UpisPanel extends JPanel {
     private JButton btnUnesiOcjenu;
     private JButton btnPromijeniOcjenu;
 
+    /**
+     * Kreira panel za rad sa upisima i incijalizuje sve GUI komponente.
+     * @param config Konfiguracija iz koje se dobija {@link UpisService}.
+     */
     public UpisPanel(AppConfig config) {
         this.upisService = config.getUpisService();
         initGui();
     }
 
+    /**
+     * Inicijalizuje i rasporedjuje sve Swing komponente.
+     */
     private void initGui() {
         setLayout(new BorderLayout());
 
-        // --- Lijevo: tekstualna lista upisa ---
-        taLista = new JTextArea();
-        taLista.setEditable(false);
-        JScrollPane scroll = new JScrollPane(taLista);
+        Lista = new JTextArea();
+        Lista.setEditable(false);
+        JScrollPane scroll = new JScrollPane(Lista);
         add(scroll, BorderLayout.CENTER);
 
-        // --- Desno: forma za rad sa upisima ---
         JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -58,27 +75,23 @@ public class UpisPanel extends JPanel {
 
         int y = 0;
 
-        // Indeks
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Broj indeksa:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfIndeks, gbc);
 
-        // Šifra predmeta
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Šifra predmeta:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfSifraPredmeta, gbc);
 
-        // Godina
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Akad. godina (npr. 2024/25):"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfGodina, gbc);
 
-        // Dugmad: upis + prikaz
         y++;
         btnUpisi = new JButton("Upiši predmet");
         btnPrikaziUpise = new JButton("Prikaži upise studenta");
@@ -88,28 +101,24 @@ public class UpisPanel extends JPanel {
         gbc.gridx = 1;
         formPanel.add(btnPrikaziUpise, gbc);
 
-        // ID upisa
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("ID upisa:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfUpisId, gbc);
 
-        // Ocjena
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Ocjena (5–10):"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfOcjena, gbc);
 
-        // Razlog
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Razlog izmjene:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfRazlog, gbc);
 
-        // Dugmad: ocjene + poništavanje
         y++;
         btnUnesiOcjenu = new JButton("Unesi ocjenu");
         btnPromijeniOcjenu = new JButton("Promijeni ocjenu");
@@ -126,7 +135,6 @@ public class UpisPanel extends JPanel {
 
         add(formPanel, BorderLayout.EAST);
 
-        // Listeneri
         btnUpisi.addActionListener(e -> upisiPredmet());
         btnPrikaziUpise.addActionListener(e -> prikaziUpise());
         btnUnesiOcjenu.addActionListener(e -> unesiOcjenu());
@@ -134,8 +142,9 @@ public class UpisPanel extends JPanel {
         btnPonistiUpis.addActionListener(e -> ponistiUpis());
     }
 
-    // ====== Akcije ======
-
+    /**
+     * Vrsi upis studenta na predmet u zadatoj akademskoj godini.
+     */
     private void upisiPredmet() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -156,6 +165,9 @@ public class UpisPanel extends JPanel {
         }
     }
 
+    /**
+     * Prikazuje sve upise za studenta po broju indeksa.
+     */
     private void prikaziUpise() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -168,7 +180,7 @@ public class UpisPanel extends JPanel {
 
             List<Upis> upisi = upisService.upisiStudenta(indeks);
             if (upisi.isEmpty()) {
-                taLista.setText("Nema upisa za ovog studenta.");
+                Lista.setText("Nema upisa za ovog studenta.");
                 return;
             }
 
@@ -176,7 +188,7 @@ public class UpisPanel extends JPanel {
             for (Upis u : upisi) {
                 sb.append(u).append(System.lineSeparator());
             }
-            taLista.setText(sb.toString());
+            Lista.setText(sb.toString());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Greška: " + e.getMessage(),
@@ -184,6 +196,9 @@ public class UpisPanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi unos ocjene za postojeci upis.
+     */
     private void unesiOcjenu() {
         try {
             long id = Long.parseLong(tfUpisId.getText().trim());
@@ -203,6 +218,9 @@ public class UpisPanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi promjenu ocjene za upis i unosi razlog izmjene.
+     */
     private void promijeniOcjenu() {
         try {
             long id = Long.parseLong(tfUpisId.getText().trim());
@@ -223,6 +241,9 @@ public class UpisPanel extends JPanel {
         }
     }
 
+    /**
+     * Ponistava upis na osnovu ID-a upisa.
+     */
     private void ponistiUpis() {
         try {
             long id = Long.parseLong(tfUpisId.getText().trim());

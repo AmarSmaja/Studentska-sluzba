@@ -8,11 +8,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Swing GUI panel za rad sa studentima.
+ * <p>Omogucava:
+ * <ul>
+ *     <li>Prikaz liste svih studenata.</li>
+ *     <li>Dodavanje novih studenata.</li>
+ *     <li>Brisanje postojecih studenata.</li>
+ *     <li>Pretragu studenata po prefiksu prezimena.</li>
+ * </ul>
+ * Za poslovnu logiku koristi se {@link StudentService}
+ * </p>
+ */
 public class StudentPanel extends JPanel {
     private final StudentService studentService;
 
-    // UI komponentе
-    private JTextArea taLista;
+    private JTextArea Lista;
     private JTextField tfIndeks;
     private JTextField tfIme;
     private JTextField tfPrezime;
@@ -23,22 +34,27 @@ public class StudentPanel extends JPanel {
     private JButton btnObrisi;
     private JButton btnPretragaPrezime;
 
+    /**
+     * Kreira panel za rad sa studentima i incijalizuje GUI komponente.
+     * @param config Konfiguacija iz koje se dobija {@link StudentService}.
+     */
     public StudentPanel(AppConfig config) {
         this.studentService = config.getStudentService();
         initGui();
         osvjeziListu();
     }
 
+    /**
+     * Inicijalizuje i rasporedjuje sve Swing komponente.
+     */
     private void initGui() {
         setLayout(new BorderLayout());
 
-        // lijevo: lista studenata
-        taLista = new JTextArea();
-        taLista.setEditable(false);
-        JScrollPane scroll = new JScrollPane(taLista);
+        Lista = new JTextArea();
+        Lista.setEditable(false);
+        JScrollPane scroll = new JScrollPane(Lista);
         add(scroll, BorderLayout.CENTER);
 
-        // desno: forma
         JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -111,23 +127,30 @@ public class StudentPanel extends JPanel {
         btnPretragaPrezime.addActionListener(e -> pretraziPoPrezimenu());
     }
 
+    /**
+     * Ucitava sve studente putem {@link StudentService#sviStudenti()}, i
+     * prikazuje ih u tekstualnom polju {@link #Lista}.
+     */
     private void osvjeziListu() {
         try {
             List<Student> studenti = studentService.sviStudenti();
             if (studenti.isEmpty()) {
-                taLista.setText("Nema studenata.");
+                Lista.setText("Nema studenata.");
                 return;
             }
             StringBuilder sb = new StringBuilder();
             for (Student s : studenti) {
                 sb.append(s).append(System.lineSeparator());
             }
-            taLista.setText(sb.toString());
+            Lista.setText(sb.toString());
         } catch (Exception e) {
-            taLista.setText("Greška pri učitavanju studenata: " + e.getMessage());
+            Lista.setText("Greška pri učitavanju studenata: " + e.getMessage());
         }
     }
 
+    /**
+     * Dodaje novog studenta koristeci informacije iz korisnickog inputa.
+     */
     private void dodajStudenta() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -157,6 +180,9 @@ public class StudentPanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi brisanje studenta koristenjem informacija iz korisnickog inputa.
+     */
     private void obrisiStudenta() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -191,6 +217,9 @@ public class StudentPanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi pretragu studenata po prezimenu koristeci informacije korisnickog inputa.
+     */
     private void pretraziPoPrezimenu() {
         try {
             String prefix = tfPrezime.getText().trim();
@@ -203,13 +232,13 @@ public class StudentPanel extends JPanel {
 
             java.util.List<Student> lista = studentService.pretraziPoPrezimenuPrefix(prefix);
             if (lista.isEmpty()) {
-                taLista.setText("Nema studenata sa zadanim prezimenom/prefixom.");
+                Lista.setText("Nema studenata sa zadanim prezimenom/prefixom.");
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (Student s : lista) {
                     sb.append(s).append(System.lineSeparator());
                 }
-                taLista.setText(sb.toString());
+                Lista.setText(sb.toString());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

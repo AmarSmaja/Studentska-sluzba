@@ -2,6 +2,11 @@ package domain;
 
 import java.util.Objects;
 
+/**
+ * Predstavlja predmet u sistemu studentske sluzbe.
+ * Sadrzi informacije o sifri predmeta, nazivu,
+ * broju ECTS bodova i semestru u kojem se nalazi predmet.
+ */
 public class Predmet {
     private String sifraPredmeta;
     private String naziv;
@@ -11,6 +16,13 @@ public class Predmet {
     public Predmet() {
     }
 
+    /**
+     *
+     * @param sifraPredmeta Sifra predmeta, npr. MAT1
+     * @param naziv Naziv predmeta, npr. Matematika 1
+     * @param ects Broj ECTS brodova predmeta, npr. 8
+     * @param semestar Broj semestra, npr. 3
+     */
     public Predmet(String sifraPredmeta, String naziv, int ects, int semestar) {
         this.sifraPredmeta = sifraPredmeta;
         this.naziv = naziv;

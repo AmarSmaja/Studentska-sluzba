@@ -2,6 +2,12 @@ package domain;
 
 import java.util.Objects;
 
+/**
+ * Predstavlja studenta u sistemu studentske sluzbe.
+ * Sadrzi osnovne informacije o studentu kao sto je:
+ * broj indeksa, imena, prezimena, studija i godina upisa.
+ */
+
 public class Student {
     private String brojIndeksa;
     private String ime;
@@ -13,6 +19,14 @@ public class Student {
 
     }
 
+    /**
+     *
+     * @param brojIndeksa Jedinstven broj indeksa, npr. 100/IT-20
+     * @param ime Ime studenta
+     * @param prezime Prezime studenta
+     * @param studijskiProgram Naziv studijskog programa, npr. Matematika
+     * @param godinaUpisa Godina upisa na studij, npr. 2020
+     */
     public Student(String brojIndeksa, String ime, String prezime, String studijskiProgram, int godinaUpisa) {
         this.brojIndeksa = brojIndeksa;
         this.ime = ime;

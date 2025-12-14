@@ -12,7 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementacija {@link StudentRepository} interfejsa
+ * <p>Koristi JDBC i {@link persistance.DBConnectionFactory} za vrsenje CRUD operacija prema bazi.</p>
+ */
 public class SQLiteStudentRepository implements StudentRepository {
+    /**
+     * Upisuje novog studenta u bazu
+     * @param student Student koji se dodaje u tabelu
+     */
     @Override
     public void save(Student student) {
         String sql = """
@@ -35,6 +43,10 @@ public class SQLiteStudentRepository implements StudentRepository {
         }
     }
 
+    /**
+     * Azurira podatke o postojecem studentu u bazi.
+     * @param student Student sa novim podacima
+     */
     @Override
     public void update(Student student) {
         String sql = """
@@ -58,6 +70,10 @@ public class SQLiteStudentRepository implements StudentRepository {
         }
     }
 
+    /**
+     * Brise studenta iz tabele na osnovu broja indeksa.
+     * @param brojIndeksa Broj indeksa studenta koji se brise, npr. 100/IT-20
+     */
     @Override
     public void delete(String brojIndeksa) {
         String sql = "DELETE FROM student WHERE broj_indeksa = ?";
@@ -68,11 +84,15 @@ public class SQLiteStudentRepository implements StudentRepository {
             ps.setString(1, brojIndeksa);
             ps.executeUpdate();
         } catch (SQLException e) {
-            // Ako student ima upise, ovdje ćeš dobiti SQL grešku zbog FK (RESTRICT) – to možeš uhvatiti u service sloju
             throw new RuntimeException("Greška pri brisanju studenta", e);
         }
     }
 
+    /**
+     * Pronalazi studenta po broju indeksa
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20
+     * @return Student, ako postoji
+     */
     @Override
     public Optional<Student> findById(String brojIndeksa) {
         String sql = "SELECT * FROM student WHERE broj_indeksa = ?";
@@ -94,6 +114,10 @@ public class SQLiteStudentRepository implements StudentRepository {
         }
     }
 
+    /**
+     * Vraca listu svih studenata iz tabele, sortiranu po prezimenu i imenu
+     * @return Lista svih studenata
+     */
     @Override
     public List<Student> findAll() {
         String sql = "SELECT * FROM student ORDER BY prezime, ime";
@@ -113,6 +137,11 @@ public class SQLiteStudentRepository implements StudentRepository {
         return result;
     }
 
+    /**
+     * Vrsi pretragu studenata po prefiksu
+     * @param prefix Prefisk prezimena, npr. S
+     * @return Student, ako postoji
+     */
     @Override
     public List<Student> findByPrezimePrefix(String prefix) {
         String sql = "SELECT broj_indeksa, ime, prezime, studijski_program, godina_upisa " +
@@ -144,6 +173,20 @@ public class SQLiteStudentRepository implements StudentRepository {
         return rezultati;
     }
 
+    /**
+     * Mapira red iz ResultSet-a u objekat {@link Student}.
+     * Ocekuje rezultat:
+     * <ul>
+     *     <li>{@code broj_indeksa}</li>
+     *     <li>{@code ime}</li>
+     *     <li>{@code prezime}</li>
+     *     <li>{@code studijski_program}</li>
+     *     <li>{@code godina_upisa}</li>
+     * </ul>
+     * @param rs ResultSet SQL upita
+     * @return Novi {@link Student} popunjen podacima
+     * @throws SQLException Ako dodje do problema pri citanju podataka
+     */
     private Student mapRow(ResultSet rs) throws SQLException {
         Student s = new Student();
         s.setBrojIndeksa(rs.getString("broj_indeksa"));

@@ -8,6 +8,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Swing GUI panel za rad sa ocjenama studenata.
+ * <p>Omogucava:
+ * <ul>
+ *     <li>Prikaz svih upisa studenta.</li>
+ *     <li>Unos ocjene za upis.</li>
+ *     <li>Promjena postojece ocjene.</li>
+ * </ul>
+ * Za poslovnu logiku koristi se {@link UpisService}.
+ * </p>
+ */
 public class OcjenePanel extends JPanel {
     private final UpisService upisService;
 
@@ -22,21 +33,26 @@ public class OcjenePanel extends JPanel {
     private JButton btnUnesiOcjenu;
     private JButton btnPromijeniOcjenu;
 
+    /**
+     * Kreira panel za upravljanje ocjenama i incijalizuje GUI komponente.
+     * @param config Konfiguracija iz koje se dobija {@link UpisService}.
+     */
     public OcjenePanel(AppConfig config) {
         this.upisService = config.getUpisService();
         initGui();
     }
 
+    /**
+     * Inicijalizuje i rasporedjuje sve Swing komponente.
+     */
     private void initGui() {
         setLayout(new BorderLayout());
 
-        // lijevo: lista upisa/ocjena
         taLista = new JTextArea();
         taLista.setEditable(false);
         JScrollPane scroll = new JScrollPane(taLista);
         add(scroll, BorderLayout.CENTER);
 
-        // desno: forma
         JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(3, 3, 3, 3);
@@ -55,18 +71,15 @@ public class OcjenePanel extends JPanel {
 
         int y = 0;
 
-        // indeks
         gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 1;
         formPanel.add(new JLabel("Broj indeksa:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfIndeks, gbc);
 
-        // dugme – učitaj upise
         y++;
         gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
         formPanel.add(btnUcitajUpise, gbc);
 
-        // ID upisa
         y++;
         gbc.gridwidth = 1;
         gbc.gridx = 0; gbc.gridy = y;
@@ -74,21 +87,18 @@ public class OcjenePanel extends JPanel {
         gbc.gridx = 1;
         formPanel.add(tfUpisId, gbc);
 
-        // ocjena
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Ocjena (5–10):"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfOcjena, gbc);
 
-        // razlog
         y++;
         gbc.gridx = 0; gbc.gridy = y;
         formPanel.add(new JLabel("Razlog promjene:"), gbc);
         gbc.gridx = 1;
         formPanel.add(tfRazlog, gbc);
 
-        // dugmad za ocjene
         y++;
         gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
         formPanel.add(btnUnesiOcjenu, gbc);
@@ -99,12 +109,14 @@ public class OcjenePanel extends JPanel {
 
         add(formPanel, BorderLayout.EAST);
 
-        // listeneri
         btnUcitajUpise.addActionListener(e -> ucitajUpiseStudenta());
         btnUnesiOcjenu.addActionListener(e -> unesiOcjenu());
         btnPromijeniOcjenu.addActionListener(e -> promijeniOcjenu());
     }
 
+    /**
+     * Ucitava i prikazuje sve upise za unesen broj indeksa.
+     */
     private void ucitajUpiseStudenta() {
         try {
             String indeks = tfIndeks.getText().trim();
@@ -134,6 +146,9 @@ public class OcjenePanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi unos ocjene za upis ciji je ID unesen.
+     */
     private void unesiOcjenu() {
         try {
             long upisId = Long.parseLong(tfUpisId.getText().trim());
@@ -145,7 +160,6 @@ public class OcjenePanel extends JPanel {
                     "Ocjena je unesena.",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
 
-            // osvježi listu za tog studenta
             ucitajUpiseStudenta();
 
         } catch (NumberFormatException nfe) {
@@ -159,6 +173,9 @@ public class OcjenePanel extends JPanel {
         }
     }
 
+    /**
+     * Vrsi promjenu ocjene za upis i upisuje razlog promjene.
+     */
     private void promijeniOcjenu() {
         try {
             long upisId = Long.parseLong(tfUpisId.getText().trim());

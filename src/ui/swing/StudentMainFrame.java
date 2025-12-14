@@ -8,11 +8,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Glavni prozor za studenta u Swing aplikaciji.
+ */
 public class StudentMainFrame extends JFrame {
     private final UpisService upisService;
     private final String brojIndeksa;
     private JTextArea taUpisi;
 
+    /**
+     * Kreira prozor za studenta i ucitava njegove upise.
+     * @param config Konfiguracija iz koje se dobija {@link UpisService}.
+     * @param brojIndeksa Broj indeksa studenta, npr. 100/IT-20.
+     */
     public StudentMainFrame(AppConfig config, String brojIndeksa) {
         this.upisService = config.getUpisService();
         this.brojIndeksa = brojIndeksa;
@@ -21,6 +29,9 @@ public class StudentMainFrame extends JFrame {
         ucitajUpise();
     }
 
+    /**
+     * Inicijalizuje sve GUI kompontente.
+     */
     private void initGui() {
         setTitle("Studentska služba - Student (" + brojIndeksa + ")");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -36,6 +47,9 @@ public class StudentMainFrame extends JFrame {
         add(new JScrollPane(taUpisi), BorderLayout.CENTER);
     }
 
+    /**
+     * Ucitava sve upise studenata.
+     */
     private void ucitajUpise() {
         try {
             List<Upis> upisi = upisService.upisiStudenta(brojIndeksa);
