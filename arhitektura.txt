@@ -1,0 +1,115 @@
+Slojevi:
+
+UI -> Servisi -> Repozitorij -> Baza
+
+- Domain
+
+Domain sloj sadrzi klase koje predstavljaju poslovne entitete:
+- Student - broj indeksa, ime, prezime, studijski program, godina upisa.
+- Predmet - sifra predmeta, naziv, broj ECTS bodova, semestar.
+- Upis - ID upisa, broj indeksa, sifra predmeta, akademska godina, ocjena, razlog izmjene ocjene.
+
+- Konfiguracija
+
+Klasa AppConfig je zaduzena za kreiranje svih repozitorija, servisa i za gettere/settere koje UI sloj koristi da dodje do servisa.
+
+Kreira repozitorije:
+- SQLiteStudentRepository,
+- SQLitePredmetRepository, i
+- SQLiteUpisRepository.
+
+Kreira servise:
+- StudentService,
+- PredmetService, i
+- UpisService.
+
+- Repozitorij (persistance paket)
+
+DBConnectionFactory - ucitava SQLite JDBC driver i otvara konekciju na lokalni .db fajl.
+DatabaseInitializer - pomocna klasa koja kreira tabele u bazi.
+
+- Repozitorij (repo paket)
+
+Sadrzi interfejse:
+- StudentRepository,
+- PredmetRepository, i
+- UpisRepository.
+Svaki interfejs deklarise standardne operacije: save, update, delete, findById, findAll, itd.
+
+- Repozitorij (repo.sqlite paket)
+
+- SQLiteStudentRepository – radi nad tabelom student.
+- SQLitePredmetRepository – radi nad tabelom predmet.
+- SQLiteUpisRepository – radi nad tabelom upis.
+
+- Service
+
+Servisi enkapsuliraju logiku i validaciju.
+
+Student servis validira obaveznost broja indeksa, opseg godina upisa i jedinstvenost indeksa. Sadrzi metode:
+- kreirajStudenta - kreira novog studenta,
+- azurirajStudenta - azurira postojeceg studenta,
+- pronadjiPoIndeksu - vraca studenta ako ga pronadje, ili vraca gresku.
+- obrisiStudenta - brise studenta ako nema upisa.
+- pretraziPoPrezimenuPrefix - pretraga po prezimenu/prefiksu.
+- sviStudenti - lista svih studenata.
+
+Predmet servis validira sifru i naziv predmeta, opseg ECTS bodova i semestra i jedinstvenost sifre predmeta. Sadrzi metode:
+- kreirajPredmet - kreira novi predmet i validira unesene podatke (sifra i naziv ne smiju biti prazni, ECTS mora biti izmedju 1 I 15, semestar izmedju 1 i 10 i ne smiju biti dva ista predmeta.
+- azurirajPredmet - azurira postojeci predmet.
+- obrisiPredmet - brise postojeci predmet.
+- pronadjiPoSifri - omogucava pretragu predmeta po sifri.
+- sviPredmeti - lista svih predmeta.
+
+Upis servis radi nad upisima i ocjenama. Metode:
+- upisiPredmet - provjerava postoje li student, predmet i nakon toga kreira upis.
+- ponisiUpis - brise upis po ID-u.
+- promijeniOcjenu - mijenja ocjenu uz obavezan razlog.
+Pored ovih metoda, nudi metodu i klase za generisanje kartona:
+- StavkaKartona i StudentKarton predstavljaju jedan red kartona i cijeli karton. Njihove metode:
+- kreirajKarton - ucitava studente, sve njegove upise, spaja ih sa predmetima, racuna ukupno polozene ECTS i vraca objekat StudentKarton.
+- formatirajKarton - formatira karton koji se prikazuje u GUI-u.
+
+- Prezentacijski sloj
+
+GUI je realizovan u Swing-u i podijeljen u vise panela i prozora.
+Ulazna tacka Main kreira AppConfig i pokrece LoginFrame.
+LoginFrame sadrzi dugmad Referent/Student i polje za unos indeksa.
+Ako je odabrana uloga "Referent", otvara se ReferentMainFrame, bez dodatne autentifikacije.
+Ako je obabrana uloga "Student", provjerava da li indeks postoji preko Student servisa i otvara StudentMainFrame.
+
+Glavni prozor za referenta sadrzi JTabbedPane tabove:
+- Studenti -> StudentPanel
+- Predmeti -> PredmetPanel
+- Upisi i ocjene -> UpisPanel
+- Ocjene -> OcjenePanel
+- Karton - KartonPanel
+
+StudentPanel prikazuje listu studenata, omogucava dodavanje, brisanje i osvjezavanje liste.
+PredmetPanel prikazuje predmete i omogucava dodavanje novih predmeta.
+UpisPanel prikazuje upise studenata na predmet, prikaz svih upisa za dati indeks i unos, promjenu i ponistavanje ocjene.
+OcjenePanel prikazuje upis i rad nad ocjenama na osnovu ID-a upisa.
+KartonPanel prikazuje formatiran karton za studenta i ukupan broj polozenih ECTS bodova.
+
+Prozor za studenta prima broj indeksa u konstruktoru i prikazuje sve upise i ocjene tog studenta.
+
+Konzolni meni prima AppConfig u konstruktoru i metodom start() pokrece beskonacnu petlju sa menijem odabira role.
+
+Meni za referenta sadrzi tri podmenija:
+1. Studenti - prikaz svih studenata, dodavanje, brisanje i azuriranje studenata i pretraga po prezimenu/prefiksu.
+2. Predmeti - osnovne CRUD operacije nad predmetima.
+3. Upisi i ocjene - upis studenta na predmet, ponistavanje upisa, unos i promjena ocjene, prikaz svih upisa za studenata.
+Pozivaju iste metode servisa kao i GUI.
+
+Konzolni meni za studenta - student unosi svoj broj indeksa. Ako se poslije validacije da li postoji taj indeks pronadje taj indeks, onda mu omogucava prikaz svojih upisa.
+
+- Baza podataka
+
+Podaci se cuvaju u SQLite fajlu 'data/studentska_sluzba.db'. Tabele:
+-student(broj_indeksa, ime, prezime, studijski_program, godina_upisa)
+- predmet(sifra_predmeta, naziv, ects, semestar)
+- upis(id, broj_indeksa, sifra_predmeta, akademska_godina, ocjena, razlog_izmjene)
+
+Relacije:
+upis.broj_indeksa -> FK na student.broj_indeksa
+upis.sifra_predmeta -> FK na predmet.sifra_predmeta.
