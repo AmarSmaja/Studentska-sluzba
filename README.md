@@ -9,6 +9,7 @@
 - Instaliran **JDK 17 +**
 - JDBC driver za SQLite:
   - File -> Project Structure -> Modules -> Dependencies -> + -> JAR or Directories... -> lib/sqlite-jdbc jar i potvrdi.
+- Napravite (**prazan**) `data` folder u root-u projekta, ukoliko ne postoji.
 - Inicijalizovanje baze podataka:
   - Unutar src/persistance pronaci i pokrenuti `DatabaseInitializer` klasu kako bi se napravila baza:
     - Ukoliko se u konzoli ispise "Sve tabele su spremne.", onda je aplikacija spremna za upotrebu.
